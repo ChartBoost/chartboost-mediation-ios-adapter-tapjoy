@@ -102,8 +102,6 @@ final class TapJoyAdapter: ModularPartnerAdapter {
     /// Notify the partner SDK of the GDPR consent status as determined by the Helium SDK.
     /// - Parameter status: The user's current GDPR consent status.
     func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        log(.setGDPRConsent(status))
-
         gdprStatus = status
         updateGDPRConsent()
     }
@@ -113,13 +111,15 @@ final class TapJoyAdapter: ModularPartnerAdapter {
             return
         }
         let policy = Tapjoy.getPrivacyPolicy()
-        policy.setUserConsent(gdprStatus == .granted ? "1" : "0")
+        let userConsent = gdprStatus == .granted ? "1" : "0"
+        log(.privacyUpdated(setting: "'UserConsent String'", value: userConsent))
+        policy.setUserConsent(userConsent)
     }
 
     /// Notify the partner SDK of the COPPA subjectivity as determined by the Helium SDK.
     /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
     func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        log(.setCOPPAConsent(isSubject))
+        log(.privacyUpdated(setting: "'BelowConsentAge Bool'", value: isSubject))
 
         let policy = Tapjoy.getPrivacyPolicy()
         policy.setBelowConsentAge(isSubject)
@@ -130,13 +130,13 @@ final class TapJoyAdapter: ModularPartnerAdapter {
     ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
     ///   - privacyString: The CCPA privacy String.
     func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
-        log(.setCCPAConsent(hasGivenConsent))
+        let privacyString = privacyString ?? (hasGivenConsent ? "1YN-" : "1YY-")
+        log(.privacyUpdated(setting: "'USPrivacy String'", value: privacyString))
 
         // https://ltv.tapjoy.com/sdk/api/objc/Classes/TJPrivacyPolicy.html#//api/name/setUSPrivacy:
         // https://ltv.tapjoy.com/sdk/api/objc/Classes/Tapjoy.html#//api/name/getPrivacyPolicy
         // https://github.com/InteractiveAdvertisingBureau/USPrivacy/blob/master/CCPA/US%20Privacy%20String.md
         let policy = Tapjoy.getPrivacyPolicy()
-        let privacyString = privacyString ?? (hasGivenConsent ? "1YN-" : "1YY-")
         policy.setUSPrivacy(privacyString)
     }
 }
