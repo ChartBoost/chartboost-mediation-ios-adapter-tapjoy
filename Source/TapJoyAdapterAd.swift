@@ -33,7 +33,7 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
     var showCompletion: ((Result<PartnerEventDetails, Error>) -> Void)?
     
     /// The Tapjoy SDK placement to load and show ads.
-    private var placement: TJPlacement
+    private let placement: TJPlacement
     
     init(adapter: PartnerAdapter, request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws {
         self.adapter = adapter
