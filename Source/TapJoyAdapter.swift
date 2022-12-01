@@ -4,140 +4,123 @@
 //
 
 import Foundation
+import UIKit
 import HeliumSdk
 import Tapjoy
-import UIKit
 
-final class TapJoyAdapter: ModularPartnerAdapter {
-    /// Get the version of the partner SDK.
+/// Helium TapJoy adapter.
+final class TapJoyAdapter: PartnerAdapter {
+    
+    /// The version of the partner SDK.
     let partnerSDKVersion: String = Tapjoy.getVersion()
-
-    /// Get the version of the mediation adapter.
+    
+    /// The version of the adapter.
+    /// It should have either 5 or 6 digits separated by periods, where the first digit is Helium SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
+    /// Format: `<Helium major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
     let adapterVersion = "4.12.10.0.0"
-
-    /// Get the internal name of the partner.
+    
+    /// The partner's unique identifier.
     let partnerIdentifier = "tapjoy"
-
-    /// Get the external/official name of the partner.
+    
+    /// The human-friendly partner name.
     let partnerDisplayName = "Tapjoy"
-
-    /// Storage of adapter instances.  Keyed by the request identifier.
-    var adAdapters: [String: PartnerAdAdapter] = [:]
-
-    /// The last value set on `setGDPRApplies(_:)`.
-    private var gdprApplies = false
-
-    /// The last value set on `setGDPRConsentStatus(_:)`.
-    private var gdprStatus: GDPRConsentStatus = .unknown
-
-    /// Upon deinitialization, end the Tapjoy session
-    deinit {
-        Tapjoy.endSession()
-    }
-
-    /// Provides a new ad adapter in charge of communicating with a single partner ad instance.
-    func makeAdAdapter(request: PartnerAdLoadRequest, partnerAdDelegate: PartnerAdDelegate) throws -> PartnerAdAdapter {
-        guard request.format != .banner else {
-            throw error(.loadFailure(request), description: "Banner ads are not supported.")
-        }
-
-        let adapter = TapJoyAdAdapter(adapter: self, request: request, partnerAdDelegate: partnerAdDelegate)
-        return adapter
-    }
-
-    /// Onitialize the partner SDK so that it's ready to request and display ads.
-    /// - Parameters:
-    ///   - configuration: The necessary initialization data provided by Helium.
-    ///   - completion: Handler to notify Helium of task completion.
+        
+    /// The designated initializer for the adapter.
+    /// Helium SDK will use this constructor to create instances of conforming types.
+    /// - parameter storage: An object that exposes storage managed by the Helium SDK to the adapter.
+    /// It includes a list of created `PartnerAd` instances. You may ignore this parameter if you don't need it.
+    init(storage: PartnerAdapterStorage) { }
+    
+    /// Does any setup needed before beginning to load ads.
+    /// - parameter configuration: Configuration data for the adapter to set up.
+    /// - parameter completion: Closure to be performed by the adapter when it's done setting up. It should include an error indicating the cause for failure or `nil` if the operation finished successfully.
     func setUp(with configuration: PartnerConfiguration, completion: @escaping (Error?) -> Void) {
         log(.setUpStarted)
-
+        
+        // Fail early if credentials unavailable
         guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
             let error = error(.missingSetUpParameter(key: .sdkKey))
             log(.setUpFailed(error))
             return completion(error)
         }
-
+        
+        // Listen to Tapjoy initialization notifications
+        NotificationCenter.default.addObserver(forName: Notification.Name(TJC_CONNECT_SUCCESS), object: nil, queue: nil) { [weak self] notification in
+            guard let self = self else { return }
+            self.log(.setUpSucceded)
+            completion(nil)
+        }
+        
+        NotificationCenter.default.addObserver(forName: Notification.Name(TJC_CONNECT_FAILED), object: nil, queue: nil) { [weak self] notification in
+            guard let self = self else { return }
+            let error = self.error(.setUpFailure)
+            self.log(.setUpFailed(error))
+            completion(error)
+        }
+        
+        // Start Tapjoy SDK
         Tapjoy.startSession()
         Tapjoy.connect(sdkKey)
-
-        let timeout: TimeInterval = 5.0
-        var duration: TimeInterval = 0
-        DispatchQueue.global(qos: .background).async {
-            while (!Tapjoy.isConnected() && duration < timeout) {
-                sleep(1)
-                duration += 1
-            }
-            if Tapjoy.isConnected() {
-                self.log(.setUpSucceded)
-                completion(nil)
-            }
-            else {
-                let error = self.error(.setUpFailure, description: "Connect timeout")
-                self.log(.setUpFailed(error))
-                completion(error)
-            }
-        }
     }
-
-    /// Compute and return a bid token for the bid request.
-    /// - Parameters:
-    ///   - request: The necessary data associated with the current bid request.
-    ///   - completion: Handler to notify Helium of task completion.
-    func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]) -> Void) {
+    
+    /// Fetches bidding tokens needed for the partner to participate in an auction.
+    /// - parameter request: Information about the ad load request.
+    /// - parameter completion: Closure to be performed with the fetched info.
+    func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]?) -> Void) {
         log(.fetchBidderInfoStarted(request))
-        log(.fetchBidderInfoSucceeded(request))
-        completion([:])
-    }
-
-    /// Notify the partner SDK of GDPR applicability as determined by the Helium SDK.
-    /// - Parameter applies: true if GDPR applies, false otherwise.
-    func setGDPRApplies(_ applies: Bool) {
-        gdprApplies = applies
-        let policy = Tapjoy.getPrivacyPolicy()
-        policy.setSubjectToGDPR(applies)
-        updateGDPRConsent()
-    }
-
-    /// Notify the partner SDK of the GDPR consent status as determined by the Helium SDK.
-    /// - Parameter status: The user's current GDPR consent status.
-    func setGDPRConsentStatus(_ status: GDPRConsentStatus) {
-        gdprStatus = status
-        updateGDPRConsent()
-    }
-
-    private func updateGDPRConsent() {
-        guard gdprApplies else {
-            return
+        if let token = Tapjoy.getUserToken() {
+            log(.fetchBidderInfoSucceeded(request))
+            completion([String.userTokenKey: token])
+        } else {
+            log(.fetchBidderInfoFailed(request, error: error(.fetchBidderInfoFailure(request))))
+            completion(nil)
         }
-        let policy = Tapjoy.getPrivacyPolicy()
-        let userConsent = gdprStatus == .granted ? "1" : "0"
-        log(.privacyUpdated(setting: "'UserConsent String'", value: userConsent))
-        policy.setUserConsent(userConsent)
     }
-
-    /// Notify the partner SDK of the COPPA subjectivity as determined by the Helium SDK.
-    /// - Parameter isSubject: True if the user is subject to COPPA, false otherwise.
-    func setUserSubjectToCOPPA(_ isSubject: Bool) {
-        log(.privacyUpdated(setting: "'BelowConsentAge Bool'", value: isSubject))
-
+    
+    /// Indicates if GDPR applies or not and the user's GDPR consent status.
+    /// - parameter applies: `true` if GDPR applies, `false` if not, `nil` if the publisher has not provided this information.
+    /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
+    func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
         let policy = Tapjoy.getPrivacyPolicy()
-        policy.setBelowConsentAge(isSubject)
+        if let applies = applies {
+            policy.setSubjectToGDPR(applies)
+            log(.privacyUpdated(setting: "setSubjectToGDPR", value: applies))
+        }
+        if status != .unknown {
+            let userConsent = status == .granted ? "1" : "0"
+            log(.privacyUpdated(setting: "userConsent", value: userConsent))
+            policy.setUserConsent(userConsent)
+        }
     }
-
-    /// Notify the partner SDK of the CCPA privacy String as supplied by the Helium SDK.
-    /// - Parameters:
-    ///   - hasGivenConsent: True if the user has given CCPA consent, false otherwise.
-    ///   - privacyString: The CCPA privacy String.
-    func setCCPAConsent(hasGivenConsent: Bool, privacyString: String?) {
-        let privacyString = privacyString ?? (hasGivenConsent ? "1YN-" : "1YY-")
-        log(.privacyUpdated(setting: "'USPrivacy String'", value: privacyString))
-
-        // https://ltv.tapjoy.com/sdk/api/objc/Classes/TJPrivacyPolicy.html#//api/name/setUSPrivacy:
-        // https://ltv.tapjoy.com/sdk/api/objc/Classes/Tapjoy.html#//api/name/getPrivacyPolicy
-        // https://github.com/InteractiveAdvertisingBureau/USPrivacy/blob/master/CCPA/US%20Privacy%20String.md
-        let policy = Tapjoy.getPrivacyPolicy()
-        policy.setUSPrivacy(privacyString)
+    
+    /// Indicates if the user is subject to COPPA or not.
+    /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
+    func setCOPPA(isChildDirected: Bool) {
+        Tapjoy.getPrivacyPolicy().setBelowConsentAge(isChildDirected)
+        log(.privacyUpdated(setting: "setBelowConsentAge", value: isChildDirected))
+    }
+    
+    /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
+    /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
+    /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
+    func setCCPA(hasGivenConsent: Bool, privacyString: String) {
+        Tapjoy.getPrivacyPolicy().setUSPrivacy(privacyString)
+        log(.privacyUpdated(setting: "setUSPrivacy", value: privacyString))
+    }
+    
+    
+    /// Creates a new ad object in charge of communicating with a single partner SDK ad instance.
+    /// Helium SDK calls this method to create a new ad for each new load request. Ad instances are never reused.
+    /// Helium SDK takes care of storing and disposing of ad instances so you don't need to.
+    /// `invalidate()` is called on ads before disposing of them in case partners need to perform any custom logic before the object gets destroyed.
+    /// If, for some reason, a new ad cannot be provided, an error should be thrown.
+    /// - parameter request: Information about the ad load request.
+    /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
+    func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
+        guard request.format != .banner else {
+            throw error(.adFormatNotSupported(request))
+        }
+        return try TapJoyAdapterAd(adapter: self, request: request, delegate: delegate)
     }
 }
 
@@ -147,6 +130,8 @@ private extension PartnerConfiguration {
 }
 
 private extension String {
-    /// Tapjoy keys
+    /// Tapjoy sdk credentials key
     static let sdkKey = "sdk_key"
+    /// Tapjoy user token key
+    static let userTokenKey = "userToken"
 }

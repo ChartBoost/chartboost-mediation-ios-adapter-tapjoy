@@ -2,7 +2,7 @@ Pod::Spec.new do |spec|
   spec.name        = 'ChartboostHeliumAdapterTapJoy'
   spec.version     = '4.12.10.0.0'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
-  spec.homepage    = 'https://github.com/ChartBoost/helium-ios-adapter-chartboost'
+  spec.homepage    = 'https://github.com/ChartBoost/helium-ios-adapter-tapjoy'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
   spec.summary     = 'Helium iOS SDK TapJoy adapter.'
   spec.description = 'TapJoy Adapters for mediating through Helium. Supported ad formats: Banner, Interstitial, and Rewarded.'
