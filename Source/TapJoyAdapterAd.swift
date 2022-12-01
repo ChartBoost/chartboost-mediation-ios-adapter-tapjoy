@@ -132,13 +132,11 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     
     func contentDidAppear(_ placement: TJPlacement) {
         log(.showSucceeded)
-        Tapjoy.setVideoAdDelegate(self)
         showCompletion?(.success([:])) ?? log(.showResultIgnored)
         showCompletion = nil
     }
     
     func contentDidDisappear(_ placement: TJPlacement) {
-        Tapjoy.setVideoAdDelegate(nil)
         log(.didDismiss(error: nil))
         delegate?.didDismiss(self, details: [:], error: nil) ?? log(.delegateUnavailable)
     }
@@ -146,13 +144,6 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     func didClick(_ placement: TJPlacement) {
         log(.didClick(error: nil))
         delegate?.didClick(self, details: [:]) ?? log(.delegateUnavailable)
-    }
-}
-
-extension TapJoyAdapterAd: TJCVideoAdDelegate {
-    
-    func videoAdError(_ errorMsg: String?) {
-        log(.delegateCallIgnored)
     }
 }
 
