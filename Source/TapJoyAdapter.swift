@@ -67,14 +67,7 @@ final class TapJoyAdapter: PartnerAdapter {
     /// - parameter request: Information about the ad load request.
     /// - parameter completion: Closure to be performed with the fetched info.
     func fetchBidderInformation(request: PreBidRequest, completion: @escaping ([String : String]?) -> Void) {
-        log(.fetchBidderInfoStarted(request))
-        if let token = Tapjoy.getUserToken() {
-            log(.fetchBidderInfoSucceeded(request))
-            completion([String.userTokenKey: token])
-        } else {
-            log(.fetchBidderInfoFailed(request, error: error(.fetchBidderInfoFailure(request))))
-            completion(nil)
-        }
+        completion(nil)
     }
     
     /// Indicates if GDPR applies or not and the user's GDPR consent status.
@@ -132,6 +125,4 @@ private extension PartnerConfiguration {
 private extension String {
     /// Tapjoy sdk credentials key
     static let sdkKey = "sdk_key"
-    /// Tapjoy user token key
-    static let userTokenKey = "userToken"
 }

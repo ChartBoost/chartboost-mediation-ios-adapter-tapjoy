@@ -65,17 +65,6 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
         placement.delegate = self
         placement.videoDelegate = self
         
-        // Set auction data for programmatic placements
-        if let adm = request.adm {
-            var auctionData: [String: Any] = [
-                TJ_AUCTION_DATA: adm,
-                TJ_AUCTION_TYPE: 1 // TJ_AUCTION_TYPE_FIRST_PRICE
-            ]
-            auctionData[TJ_AUCTION_CLEARING_PRICE] = request.partnerSettings["clearing_price"].flatMap(Double.init)   // TODO: Confirm
-            auctionData[TJ_AUCTION_ID] = request.partnerSettings["auction_id"]   // TODO: Confirm
-            placement.auctionData = auctionData
-        }
-        
         // Load ad
         placement.requestContent()
     }
