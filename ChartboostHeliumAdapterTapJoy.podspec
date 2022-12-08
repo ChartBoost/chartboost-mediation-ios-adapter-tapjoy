@@ -1,8 +1,8 @@
 Pod::Spec.new do |spec|
   spec.name        = 'ChartboostHeliumAdapterTapJoy'
-  spec.version     = '4.12.8.0.0'
+  spec.version     = '4.12.10.0.0'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
-  spec.homepage    = 'https://github.com/ChartBoost/helium-ios-adapter-chartboost'
+  spec.homepage    = 'https://github.com/ChartBoost/helium-ios-adapter-tapjoy'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
   spec.summary     = 'Helium iOS SDK TapJoy adapter.'
   spec.description = 'TapJoy Adapters for mediating through Helium. Supported ad formats: Banner, Interstitial, and Rewarded.'
@@ -11,6 +11,7 @@ Pod::Spec.new do |spec|
   spec.module_name  = 'HeliumAdapterTapJoy'
   spec.source       = { :git => 'https://github.com/ChartBoost/helium-ios-adapter-tapjoy.git', :tag => '#{spec.version}' }
   spec.source_files = 'Source/**/*.{swift}'
+  spec.static_framework = true
 
   # Minimum supported versions
   spec.swift_version         = '5.0'
@@ -23,5 +24,5 @@ Pod::Spec.new do |spec|
   spec.dependency 'ChartboostHelium', '~> 4.0'
 
   # Partner network SDK and version that this adapter is certified to work with.
-  spec.dependency 'TapjoySDK', '12.8' 
+  spec.dependency 'TapjoySDK', '12.10.0'
 end
