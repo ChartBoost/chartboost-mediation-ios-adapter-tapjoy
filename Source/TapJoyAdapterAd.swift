@@ -86,9 +86,7 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
         
         // Show ad
         showCompletion = completion
-        DispatchQueue.main.async { [self] in
-            placement.showContent(with: viewController)
-        }
+        placement.showContent(with: viewController)
     }
 }
 
