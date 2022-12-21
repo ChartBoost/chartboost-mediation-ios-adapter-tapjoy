@@ -110,10 +110,14 @@ final class TapJoyAdapter: PartnerAdapter {
     /// - parameter request: Information about the ad load request.
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
-        guard request.format != .banner else {
+        switch request.format {
+        case .interstitial, .rewarded:
+            return try TapJoyAdapterAd(adapter: self, request: request, delegate: delegate)
+        case .banner:
+            throw error(.adFormatNotSupported(request))
+        @unknown default:
             throw error(.adFormatNotSupported(request))
         }
-        return try TapJoyAdapterAd(adapter: self, request: request, delegate: delegate)
     }
 }
 
