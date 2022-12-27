@@ -39,7 +39,7 @@ final class TapJoyAdapter: PartnerAdapter {
         
         // Fail early if credentials unavailable
         guard let sdkKey = configuration.sdkKey, !sdkKey.isEmpty else {
-            let error = error(.missingSetUpParameter(key: .sdkKey))
+            let error = error(.initializationFailureInvalidCredentials, description: "Missing \(String.sdkKey)")
             log(.setUpFailed(error))
             return completion(error)
         }
@@ -53,7 +53,7 @@ final class TapJoyAdapter: PartnerAdapter {
         
         NotificationCenter.default.addObserver(forName: Notification.Name(TJC_CONNECT_FAILED), object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
-            let error = self.error(.setUpFailure)
+            let error = self.error(.initializationFailurePartnerNotIntegrated)
             self.log(.setUpFailed(error))
             completion(error)
         }
@@ -114,9 +114,9 @@ final class TapJoyAdapter: PartnerAdapter {
         case .interstitial, .rewarded:
             return try TapJoyAdapterAd(adapter: self, request: request, delegate: delegate)
         case .banner:
-            throw error(.adFormatNotSupported(request))
+            throw error(.loadFailureUnsupportedAdFormat)
         @unknown default:
-            throw error(.adFormatNotSupported(request))
+            throw error(.loadFailureUnsupportedAdFormat)
         }
     }
 }
