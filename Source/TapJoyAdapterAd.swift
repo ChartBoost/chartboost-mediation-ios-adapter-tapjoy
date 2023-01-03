@@ -47,7 +47,7 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
         ) {
             self.placement = placement
         } else {
-            throw adapter.error(.adCreationFailure(request), description: "Failed to create TJPlacement")
+            throw adapter.error(.loadFailureAborted, description: "Failed to create TJPlacement")
         }
     }
     
@@ -78,7 +78,7 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
         
         // Fail early if ad is not ready
         guard placement.isContentReady && placement.isContentAvailable else {
-            let error = error(.noAdReadyToShow)
+            let error = error(.showFailureAdNotReady)
             log(.showFailed(error))
             completion(.failure(error))
             return
@@ -94,7 +94,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     
     func requestDidSucceed(_ placement: TJPlacement) {
         if !placement.isContentAvailable {
-            let error = error(.loadFailure, description: "No content available")
+            let error = error(.loadFailureUnknown, description: "No content available")
             log(.loadFailed(error))
             loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
             loadCompletion = nil
@@ -105,7 +105,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     }
     
     func requestDidFail(_ placement: TJPlacement, error partnerError: Error?) {
-        let error = error(.loadFailure, error: partnerError)
+        let error = error(.loadFailureUnknown, error: partnerError)
         log(.loadFailed(error))
         loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
         loadCompletion = nil
