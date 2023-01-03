@@ -53,7 +53,7 @@ final class TapJoyAdapter: PartnerAdapter {
         
         NotificationCenter.default.addObserver(forName: Notification.Name(TJC_CONNECT_FAILED), object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
-            let error = self.error(.initializationFailurePartnerNotIntegrated)
+            let error = self.error(.initializationFailureUnknown)
             self.log(.setUpFailed(error))
             completion(error)
         }

@@ -94,7 +94,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     
     func requestDidSucceed(_ placement: TJPlacement) {
         if !placement.isContentAvailable {
-            let error = error(.loadFailureException, description: "No content available")
+            let error = error(.loadFailureUnknown, description: "No content available")
             log(.loadFailed(error))
             loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
             loadCompletion = nil
@@ -105,7 +105,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     }
     
     func requestDidFail(_ placement: TJPlacement, error partnerError: Error?) {
-        let error = error(.loadFailureException, error: partnerError)
+        let error = error(.loadFailureUnknown, error: partnerError)
         log(.loadFailed(error))
         loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
         loadCompletion = nil
