@@ -105,7 +105,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     }
     
     func requestDidFail(_ placement: TJPlacement, error partnerError: Error?) {
-        let error = error(.loadFailureUnknown, error: partnerError)
+        let error = partnerError ?? error(.loadFailureUnknown)
         log(.loadFailed(error))
         loadCompletion?(.failure(error)) ?? log(.loadResultIgnored)
         loadCompletion = nil
