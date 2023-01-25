@@ -1,6 +1,6 @@
 # Chartboost Mediation TapJoy Adapter
 
-The Chartboost Mediation TapJoy adapter mediates the TapJoy SDK into the Chartboost Mediation SDK.
+The Chartboost Mediation TapJoy adapter mediates TapJoy via the Chartboost Mediation SDK.
 
 ## Minimum Requirements
 
