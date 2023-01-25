@@ -1,6 +1,6 @@
-# Chartboost Mediation TapJoy Adapter
+# Chartboost Mediation Tapjoy Adapter
 
-The Chartboost Mediation TapJoy adapter mediates TapJoy via the Chartboost Mediation SDK.
+The Chartboost Mediation Tapjoy adapter mediates Tapjoy via the Chartboost Mediation SDK.
 
 ## Minimum Requirements
 
@@ -15,7 +15,7 @@ The Chartboost Mediation TapJoy adapter mediates TapJoy via the Chartboost Media
 
 In your `Podfile`, add the following entry:
 ```
-pod 'ChartboostMediationAdapterTapJoy'
+pod 'ChartboostMediationAdapterTapjoy'
 ```
 
 ## Contributions

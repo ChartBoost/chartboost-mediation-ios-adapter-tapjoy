@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file.
 
 //
-//  TapJoyAdapter.swift
-//  ChartboostHeliumAdapterTapJoy
+//  TapjoyAdapter.swift
+//  ChartboostHeliumAdapterTapjoy
 //
 
 import Foundation
@@ -13,8 +13,8 @@ import UIKit
 import HeliumSdk
 import Tapjoy
 
-/// Helium TapJoy adapter.
-final class TapJoyAdapter: PartnerAdapter {
+/// Helium Tapjoy adapter.
+final class TapjoyAdapter: PartnerAdapter {
     
     /// The version of the partner SDK.
     let partnerSDKVersion: String = Tapjoy.getVersion()
@@ -117,7 +117,7 @@ final class TapJoyAdapter: PartnerAdapter {
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
         switch request.format {
         case .interstitial, .rewarded:
-            return try TapJoyAdapterAd(adapter: self, request: request, delegate: delegate)
+            return try TapjoyAdapterAd(adapter: self, request: request, delegate: delegate)
         case .banner:
             throw error(.loadFailureUnsupportedAdFormat)
         @unknown default:

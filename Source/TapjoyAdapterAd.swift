@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file.
 
 //
-//  TapJoyAdapterAd.swift
-//  ChartboostHeliumAdapterTapJoy
+//  TapjoyAdapterAd.swift
+//  ChartboostHeliumAdapterTapjoy
 //
 
 import Foundation
@@ -14,7 +14,7 @@ import HeliumSdk
 import Tapjoy
 
 /// The Helium Tapjoy adapter ad.
-final class TapJoyAdapterAd: NSObject, PartnerAd {
+final class TapjoyAdapterAd: NSObject, PartnerAd {
     
     /// The partner adapter that created this ad.
     let adapter: PartnerAdapter
@@ -95,7 +95,7 @@ final class TapJoyAdapterAd: NSObject, PartnerAd {
     }
 }
 
-extension TapJoyAdapterAd: TJPlacementDelegate {
+extension TapjoyAdapterAd: TJPlacementDelegate {
     
     func requestDidSucceed(_ placement: TJPlacement) {
         if !placement.isContentAvailable {
@@ -139,7 +139,7 @@ extension TapJoyAdapterAd: TJPlacementDelegate {
     }
 }
 
-extension TapJoyAdapterAd: TJPlacementVideoDelegate {
+extension TapjoyAdapterAd: TJPlacementVideoDelegate {
     
     func videoDidComplete(_ placement: TJPlacement) {
         log(.didReward)
