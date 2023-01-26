@@ -1,15 +1,15 @@
 Pod::Spec.new do |spec|
-  spec.name        = 'ChartboostHeliumAdapterTapjoy'
+  spec.name        = 'ChartboostMediationAdapterTapjoy'
   spec.version     = '4.12.10.0.0'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
-  spec.homepage    = 'https://github.com/ChartBoost/helium-ios-adapter-tapjoy'
+  spec.homepage    = 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-tapjoy'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
-  spec.summary     = 'Helium iOS SDK Tapjoy adapter.'
-  spec.description = 'Tapjoy Adapters for mediating through Helium. Supported ad formats: Banner, Interstitial, and Rewarded.'
+  spec.summary     = 'Chartboost Mediation iOS SDK Tapjoy adapter.'
+  spec.description = 'Tapjoy Adapters for mediating through Chartboost Mediation. Supported ad formats: Banner, Interstitial, and Rewarded.'
 
   # Source
-  spec.module_name  = 'HeliumAdapterTapjoy'
-  spec.source       = { :git => 'https://github.com/ChartBoost/helium-ios-adapter-tapjoy.git', :tag => spec.version }
+  spec.module_name  = 'ChartboostMediationAdapterTapjoy'
+  spec.source       = { :git => 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-tapjoy.git', :tag => spec.version }
   spec.source_files = 'Source/**/*.{swift}'
   spec.static_framework = true
 
@@ -20,8 +20,8 @@ Pod::Spec.new do |spec|
   # System frameworks used
   spec.ios.frameworks = ['Foundation', 'UIKit']
   
-  # This adapter is compatible with all Helium 4.X versions of the SDK.
-  spec.dependency 'ChartboostHelium', '~> 4.0'
+  # This adapter is compatible with all Chartboost Mediation 4.X versions of the SDK.
+  spec.dependency 'ChartboostMediationSDK', '~> 4.0'
 
   # Partner network SDK and version that this adapter is certified to work with.
   spec.dependency 'TapjoySDK', '12.10.0'

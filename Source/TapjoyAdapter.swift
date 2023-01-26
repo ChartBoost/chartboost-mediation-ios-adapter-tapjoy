@@ -8,10 +8,10 @@
 //  ChartboostHeliumAdapterTapjoy
 //
 
+import ChartboostMediationSDK
 import Foundation
-import UIKit
-import HeliumSdk
 import Tapjoy
+import UIKit
 
 /// Helium Tapjoy adapter.
 final class TapjoyAdapter: PartnerAdapter {
