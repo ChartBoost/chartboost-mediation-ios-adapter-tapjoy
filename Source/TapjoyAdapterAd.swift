@@ -5,7 +5,7 @@
 
 //
 //  TapjoyAdapterAd.swift
-//  ChartboostHeliumAdapterTapjoy
+//  ChartboostMediationAdapterTapjoy
 //
 
 import ChartboostMediationSDK
@@ -13,7 +13,7 @@ import Foundation
 import Tapjoy
 import UIKit
 
-/// The Helium Tapjoy adapter ad.
+/// The Chartboost Mediation Tapjoy adapter ad.
 final class TapjoyAdapterAd: NSObject, PartnerAd {
     
     /// The partner adapter that created this ad.
@@ -31,10 +31,10 @@ final class TapjoyAdapterAd: NSObject, PartnerAd {
     /// Should be nil for full-screen ads.
     var inlineView: UIView? { nil }
     
-    /// The completion handler to notify Helium of ad load completion result.
+    /// The completion handler to notify Chartboost Mediation of ad load completion result.
     var loadCompletion: ((Result<PartnerEventDetails, Error>) -> Void)?
     
-    /// The completion handler to notify Helium of ad load completion result.
+    /// The completion handler to notify Chartboost Mediation of ad load completion result.
     var showCompletion: ((Result<PartnerEventDetails, Error>) -> Void)?
     
     /// The Tapjoy SDK placement to load and show ads.

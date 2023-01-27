@@ -5,7 +5,7 @@
 
 //
 //  TapjoyAdapterConfiguration.swift
-//  ChartboostHeliumAdapterTapjoy
+//  ChartboostMediationAdapterTapjoy
 //
 
 import Tapjoy
