@@ -74,6 +74,7 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter applies: `true` if GDPR applies, `false` if not, `nil` if the publisher has not provided this information.
     /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
     func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
+        // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
         let policy = Tapjoy.getPrivacyPolicy()
         if let applies = applies {
             policy.setSubjectToGDPR(applies)
@@ -89,6 +90,7 @@ final class TapjoyAdapter: PartnerAdapter {
     /// Indicates if the user is subject to COPPA or not.
     /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
     func setCOPPA(isChildDirected: Bool) {
+        // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
         Tapjoy.getPrivacyPolicy().setBelowConsentAge(isChildDirected)
         log(.privacyUpdated(setting: "setBelowConsentAge", value: isChildDirected))
     }
@@ -97,6 +99,7 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter hasGivenConsent: A boolean indicating if the user has given consent.
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
     func setCCPA(hasGivenConsent: Bool, privacyString: String) {
+        // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
         Tapjoy.getPrivacyPolicy().setUSPrivacy(privacyString)
         log(.privacyUpdated(setting: "setUSPrivacy", value: privacyString))
     }
