@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name        = 'ChartboostMediationAdapterTapjoy'
-  spec.version     = '4.12.10.0.0'
+  spec.version     = '4.12.11.0.0'
   spec.license     = { :type => 'MIT', :file => 'LICENSE.md' }
   spec.homepage    = 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-tapjoy'
   spec.authors     = { 'Chartboost' => 'https://www.chartboost.com/' }
@@ -24,5 +24,5 @@ Pod::Spec.new do |spec|
   spec.dependency 'ChartboostMediationSDK', '~> 4.0'
 
   # Partner network SDK and version that this adapter is certified to work with.
-  spec.dependency 'TapjoySDK', '12.10.0'
+  spec.dependency 'TapjoySDK', '~> 12.11.0'
 end

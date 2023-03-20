@@ -129,6 +129,7 @@ extension TapjoyAdapterAd: TJPlacementDelegate {
     }
     
     func didClick(_ placement: TJPlacement) {
+        // didClick is not being called in TapjoySDK 12.11.0+.
         log(.didClick(error: nil))
         delegate?.didClick(self, details: [:]) ?? log(.delegateUnavailable)
     }
