@@ -24,5 +24,5 @@ Pod::Spec.new do |spec|
   spec.dependency 'ChartboostMediationSDK', '~> 4.0'
 
   # Partner network SDK and version that this adapter is certified to work with.
-  spec.dependency 'TapjoySDK', '13.0.0'
+  spec.dependency 'TapjoySDK', '~> 13.0.0'
 end
