@@ -24,12 +24,17 @@ final class TapjoyAdapter: PartnerAdapter {
     
     /// The human-friendly partner name.
     let partnerDisplayName = "Tapjoy"
-        
+    
+    /// Ad storage managed by Chartboost Mediation SDK.
+    let storage: PartnerAdapterStorage
+    
     /// The designated initializer for the adapter.
     /// Chartboost Mediation SDK will use this constructor to create instances of conforming types.
     /// - parameter storage: An object that exposes storage managed by the Chartboost Mediation SDK to the adapter.
     /// It includes a list of created `PartnerAd` instances. You may ignore this parameter if you don't need it.
-    init(storage: PartnerAdapterStorage) { }
+    init(storage: PartnerAdapterStorage) {
+        self.storage = storage
+    }
     
     /// Does any setup needed before beginning to load ads.
     /// - parameter configuration: Configuration data for the adapter to set up.
@@ -113,6 +118,12 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter request: Information about the ad load request.
     /// - parameter delegate: The delegate that will receive ad life-cycle notifications.
     func makeAd(request: PartnerAdLoadRequest, delegate: PartnerAdDelegate) throws -> PartnerAd {
+        // Prevent multiple loads for the same partner placement, since the partner SDK cannot handle them.
+        guard !storage.ads.contains(where: { $0.request.partnerPlacement == request.partnerPlacement }) else {
+            log("Failed to load ad for already loading placement \(request.partnerPlacement)")
+            throw error(.loadFailureLoadInProgress)
+        }
+        
         switch request.format {
         case .interstitial, .rewarded:
             return try TapjoyAdapterAd(adapter: self, request: request, delegate: delegate)
