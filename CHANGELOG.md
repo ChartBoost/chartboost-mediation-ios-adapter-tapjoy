@@ -10,5 +10,9 @@ Adapters are compatible with any Chartboost Mediation SDK version within that ma
 ### 4.13.0.0.0
 - This version of the adapters has been certified with TapjoySDK 13.0.0
 
+### 4.12.11.0.0
+- Note: The `didClick` delegate method is not called in TapjoySDK 12.11.0.
+- This version of the adapters has been certified with TapjoySDK 12.11.0.
+
 ### 4.12.10.0.0
 - This version of the adapters has been certified with TapjoySDK 12.10.0.

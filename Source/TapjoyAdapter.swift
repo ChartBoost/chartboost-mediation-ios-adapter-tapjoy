@@ -129,7 +129,7 @@ final class TapjoyAdapter: PartnerAdapter {
             return try TapjoyAdapterAd(adapter: self, request: request, delegate: delegate)
         case .banner:
             throw error(.loadFailureUnsupportedAdFormat)
-        @unknown default:
+        default:
             throw error(.loadFailureUnsupportedAdFormat)
         }
     }
