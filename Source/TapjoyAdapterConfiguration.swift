@@ -9,7 +9,7 @@ import os.log
 /// A list of externally configurable properties pertaining to the partner SDK that can be retrieved and set by publishers.
 @objc public class TapjoyAdapterConfiguration: NSObject {
     
-    private static var log = OSLog(subsystem: "com.chartboost.mediation.adapter.tapjoy", category: "Configuration")
+    private static let log = OSLog(subsystem: "com.chartboost.mediation.adapter.tapjoy", category: "Configuration")
 
     /// Flag that can optionally be set to enable the partner's test mode.
     /// Disabled by default.
@@ -17,7 +17,7 @@ import os.log
         didSet {
             Tapjoy.setDebugEnabled(testMode)
             if #available(iOS 12.0, *) {
-                os_log(.debug, log: log, "Tapjoy SDK test mode set to %{public}s", testMode ? "true" : "false")
+                os_log(.debug, log: log, "Tapjoy SDK test mode set to %{public}s", "\(testMode)")
             }
         }
     }
@@ -28,7 +28,7 @@ import os.log
         didSet {
             Tapjoy.setDebugEnabled(verboseLogging)
             if #available(iOS 12.0, *) {
-                os_log(.debug, log: log, "Tapjoy SDK verbose logging set to %{public}s", verboseLogging ? "true" : "false")
+                os_log(.debug, log: log, "Tapjoy SDK verbose logging set to %{public}s", "\(verboseLogging)")
             }
         }
     }
