@@ -5,6 +5,7 @@ Adapters are compatible with any Chartboost Mediation SDK version within that ma
 
 ### 4.13.3.0.0
 - Support new Tapjoy TJPrivacyPolicy APIs.
+- Show Tapjoy SDK initialization errors in console logs.
 - This version of the adapter has been certified with TapjoySDK 13.3.0.
 
 ### 4.13.0.0.1
