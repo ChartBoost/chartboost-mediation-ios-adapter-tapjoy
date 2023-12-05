@@ -80,24 +80,22 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
     func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        let policy = Tapjoy.getPrivacyPolicy()
-        if let applies = applies {
-            policy.setSubjectToGDPR(applies)
-            log(.privacyUpdated(setting: "setSubjectToGDPR", value: applies))
-        }
-        if status != .unknown {
-            let userConsent = status == .granted ? "1" : "0"
-            log(.privacyUpdated(setting: "userConsent", value: userConsent))
-            policy.setUserConsent(userConsent)
-        }
+        let appliesStatus = TJStatus(value: applies)
+        Tapjoy.getPrivacyPolicy().subjectToGDPRStatus = appliesStatus
+        log(.privacyUpdated(setting: "subjectToGDPRStatus", value: applies))
+
+        let consentStatus = TJStatus(value: status)
+        log(.privacyUpdated(setting: "userConsentStatus", value: status))
+        Tapjoy.getPrivacyPolicy().userConsentStatus = consentStatus
     }
     
     /// Indicates if the user is subject to COPPA or not.
     /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
     func setCOPPA(isChildDirected: Bool) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        Tapjoy.getPrivacyPolicy().setBelowConsentAge(isChildDirected)
-        log(.privacyUpdated(setting: "setBelowConsentAge", value: isChildDirected))
+        let status = TJStatus(value: isChildDirected)
+        Tapjoy.getPrivacyPolicy().belowConsentAgeStatus = status
+        log(.privacyUpdated(setting: "belowConsentAgeStatus", value: isChildDirected))
     }
     
     /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
@@ -105,8 +103,8 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
     func setCCPA(hasGivenConsent: Bool, privacyString: String) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        Tapjoy.getPrivacyPolicy().setUSPrivacy(privacyString)
-        log(.privacyUpdated(setting: "setUSPrivacy", value: privacyString))
+        Tapjoy.getPrivacyPolicy().usPrivacy = privacyString
+        log(.privacyUpdated(setting: "usPrivacy", value: privacyString))
     }
     
     
@@ -143,4 +141,32 @@ private extension PartnerConfiguration {
 private extension String {
     /// Tapjoy sdk credentials key
     static let sdkKey = "sdk_key"
+}
+
+/// Convenience extension to transform boolean values into TJStatus.
+private extension TJStatus {
+
+    init(value: Bool?) {
+        switch value {
+        case true?:
+            self = .true
+        case false?:
+            self = .false
+        case nil:
+            self = .unknown
+        }
+    }
+
+    init(value: GDPRConsentStatus) {
+        switch value {
+        case .granted:
+            self = .true
+        case .denied:
+            self = .false
+        case .unknown:
+            self = .unknown
+        default:
+            self = .unknown
+        }
+    }
 }
