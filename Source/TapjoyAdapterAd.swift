@@ -39,12 +39,7 @@ final class TapjoyAdapterAd: NSObject, PartnerAd {
         self.adapter = adapter
         self.request = request
         self.delegate = delegate
-        if let placement = TJPlacement(
-            name: request.partnerPlacement,
-            mediationAgent: "chartboost",
-            mediationId: nil,
-            delegate: nil
-        ) {
+        if let placement = TJPlacement(name: request.partnerPlacement, delegate: nil) {
             self.placement = placement
         } else {
             throw adapter.error(.loadFailureAborted, description: "Failed to create TJPlacement")
@@ -60,11 +55,9 @@ final class TapjoyAdapterAd: NSObject, PartnerAd {
         loadCompletion = completion
         
         // Configure the placement
-        placement.adapterVersion = adapter.adapterVersion
         placement.placementName = request.partnerPlacement
         placement.delegate = self
-        placement.videoDelegate = self
-        
+
         // Load ad
         placement.requestContent()
     }
@@ -133,16 +126,10 @@ extension TapjoyAdapterAd: TJPlacementDelegate {
         log(.didClick(error: nil))
         delegate?.didClick(self, details: [:]) ?? log(.delegateUnavailable)
     }
-}
 
-extension TapjoyAdapterAd: TJPlacementVideoDelegate {
-    
-    func videoDidComplete(_ placement: TJPlacement) {
+    func placement(_ placement: TJPlacement, didRequestReward request: TJActionRequest?, itemId: String?, quantity: Int32) {
+        // See https://dev.tapjoy.com/en/ios-sdk/SDK#id-6-handling-tapjoy-content-action-requests
         log(.didReward)
         delegate?.didReward(self, details: [:]) ?? log(.delegateUnavailable)
-    }
-    
-    func videoDidFail(_ placement: TJPlacement, error errorMsg: String?) {
-        log(.delegateCallIgnored)
     }
 }

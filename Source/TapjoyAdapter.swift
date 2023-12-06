@@ -17,7 +17,7 @@ final class TapjoyAdapter: PartnerAdapter {
     /// The version of the adapter.
     /// It should have either 5 or 6 digits separated by periods, where the first digit is Chartboost Mediation SDK's major version, the last digit is the adapter's build version, and intermediate digits are the partner SDK's version.
     /// Format: `<Chartboost Mediation major version>.<Partner major version>.<Partner minor version>.<Partner patch version>.<Partner build version>.<Adapter build version>` where `.<Partner build version>` is optional.
-    let adapterVersion = "4.13.0.0.1"
+    let adapterVersion = "4.13.3.0.0"
     
     /// The partner's unique identifier.
     let partnerIdentifier = "tapjoy"
@@ -58,7 +58,7 @@ final class TapjoyAdapter: PartnerAdapter {
         
         NotificationCenter.default.addObserver(forName: Notification.Name(TJC_CONNECT_FAILED), object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
-            let error = self.error(.initializationFailureUnknown)
+            let error = notification.userInfo?[TJC_CONNECT_USER_INFO_ERROR] as? Error ?? self.error(.initializationFailureUnknown)
             self.log(.setUpFailed(error))
             completion(error)
         }
@@ -80,24 +80,22 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter status: One of the `GDPRConsentStatus` values depending on the user's preference.
     func setGDPR(applies: Bool?, status: GDPRConsentStatus) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        let policy = Tapjoy.getPrivacyPolicy()
-        if let applies = applies {
-            policy.setSubjectToGDPR(applies)
-            log(.privacyUpdated(setting: "setSubjectToGDPR", value: applies))
-        }
-        if status != .unknown {
-            let userConsent = status == .granted ? "1" : "0"
-            log(.privacyUpdated(setting: "userConsent", value: userConsent))
-            policy.setUserConsent(userConsent)
-        }
+        let appliesStatus = TJStatus(value: applies)
+        Tapjoy.getPrivacyPolicy().subjectToGDPRStatus = appliesStatus
+        log(.privacyUpdated(setting: "subjectToGDPRStatus", value: applies))
+
+        let consentStatus = TJStatus(value: status)
+        Tapjoy.getPrivacyPolicy().userConsentStatus = consentStatus
+        log(.privacyUpdated(setting: "userConsentStatus", value: status))
     }
     
     /// Indicates if the user is subject to COPPA or not.
     /// - parameter isChildDirected: `true` if the user is subject to COPPA, `false` otherwise.
     func setCOPPA(isChildDirected: Bool) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        Tapjoy.getPrivacyPolicy().setBelowConsentAge(isChildDirected)
-        log(.privacyUpdated(setting: "setBelowConsentAge", value: isChildDirected))
+        let status = TJStatus(value: isChildDirected)
+        Tapjoy.getPrivacyPolicy().belowConsentAgeStatus = status
+        log(.privacyUpdated(setting: "belowConsentAgeStatus", value: isChildDirected))
     }
     
     /// Indicates the CCPA status both as a boolean and as an IAB US privacy string.
@@ -105,8 +103,8 @@ final class TapjoyAdapter: PartnerAdapter {
     /// - parameter privacyString: An IAB-compliant string indicating the CCPA status.
     func setCCPA(hasGivenConsent: Bool, privacyString: String) {
         // See https://dev.tapjoy.com/en/ios-sdk/User-Privacy
-        Tapjoy.getPrivacyPolicy().setUSPrivacy(privacyString)
-        log(.privacyUpdated(setting: "setUSPrivacy", value: privacyString))
+        Tapjoy.getPrivacyPolicy().usPrivacy = privacyString
+        log(.privacyUpdated(setting: "usPrivacy", value: privacyString))
     }
     
     
@@ -143,4 +141,32 @@ private extension PartnerConfiguration {
 private extension String {
     /// Tapjoy sdk credentials key
     static let sdkKey = "sdk_key"
+}
+
+/// Convenience extension to transform boolean values into TJStatus.
+private extension TJStatus {
+
+    init(value: Bool?) {
+        switch value {
+        case true?:
+            self = .true
+        case false?:
+            self = .false
+        case nil:
+            self = .unknown
+        }
+    }
+
+    init(value: GDPRConsentStatus) {
+        switch value {
+        case .granted:
+            self = .true
+        case .denied:
+            self = .false
+        case .unknown:
+            self = .unknown
+        default:
+            self = .unknown
+        }
+    }
 }
