@@ -85,8 +85,8 @@ final class TapjoyAdapter: PartnerAdapter {
         log(.privacyUpdated(setting: "subjectToGDPRStatus", value: applies))
 
         let consentStatus = TJStatus(value: status)
-        log(.privacyUpdated(setting: "userConsentStatus", value: status))
         Tapjoy.getPrivacyPolicy().userConsentStatus = consentStatus
+        log(.privacyUpdated(setting: "userConsentStatus", value: status))
     }
     
     /// Indicates if the user is subject to COPPA or not.
