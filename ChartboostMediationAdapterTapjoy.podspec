@@ -10,6 +10,7 @@ Pod::Spec.new do |spec|
   # Source
   spec.module_name  = 'ChartboostMediationAdapterTapjoy'
   spec.source       = { :git => 'https://github.com/ChartBoost/chartboost-mediation-ios-adapter-tapjoy.git', :tag => spec.version }
+  spec.resource_bundles = { 'ChartboostMediationAdapterTapjoy' => ['PrivacyInfo.xcprivacy'] }
   spec.source_files = 'Source/**/*.{swift}'
   spec.static_framework = true
 
