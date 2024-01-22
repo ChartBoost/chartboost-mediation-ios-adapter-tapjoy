@@ -1,3 +1,12 @@
+**⚠️ DEPRECATED**
+
+---
+
+This partner is no longer supported by Chartboost Mediation. \
+This adapter is now deprecated and will receive no future updates.
+
+---
+
 # Chartboost Mediation Tapjoy Adapter
 
 The Chartboost Mediation Tapjoy adapter mediates Tapjoy via the Chartboost Mediation SDK.
